@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.SchoolClassMapper" >
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.SchoolClass" >
+    <id column="id" property="id"  />
+	<result column="name" property="name"  />
+	<association property="institute" javaType="Institute">
+		<id property="id" column="i_id"/>
+		<result property="name" column="i_name"/>
+	</association>
+	<association property="schoolroom" javaType="Schoolroom">
+		<id property="id" column="room_id"/>
+		<result property="name" column="room_name"/>
+	</association>
+	<association property="employee" javaType="Employee">
+		<id property="id" column="e_id"/>
+		<result property="realname" column="e_realname"/>
+	</association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from schoolClass where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com._520it.crm.domain.SchoolClass" useGeneratedKeys="true" keyProperty="id" >
+    insert into schoolClass 
+    (institute_id,schoolroom_id,employee_id,name)
+    values 
+    (#{institute.id},#{schoolroom.id},#{employee.id},#{name})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.SchoolClass" >
+    update schoolClass
+    set
+	    institute_id=#{institute.id},
+	    schoolroom_id=#{schoolroom.id},
+	    employee_id=#{employee.id},
+	    name=#{name}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+    select class.*,e.id e_id,e.realname e_realname,room.id room_id,
+  	room.name room_name,i.id i_id,i.name i_name 
+	from schoolclass class
+	LEFT JOIN employee e on class.employee_id=e.id
+	LEFT JOIN schoolroom room on class.schoolroom_id=room.id
+	LEFT JOIN institute i on class.institute_id=i.id
+	where class.id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id,name from schoolclass
+  </select>
+  <sql id="conditionSql">
+  	<where>
+  	</where>
+  </sql>
+  <sql id="selectAll">
+  	select class.*,e.id e_id,e.realname e_realname,room.id room_id,
+  	room.name room_name,i.id i_id,i.name i_name 
+	from schoolclass class
+	LEFT JOIN employee e on class.employee_id=e.id
+	LEFT JOIN schoolroom room on class.schoolroom_id=room.id
+	LEFT JOIN institute i on class.institute_id=i.id
+  </sql>
+  <select id="queryPageCount" resultType="long">
+  	select count(*)
+	from schoolclass class
+	LEFT JOIN employee e on class.employee_id=e.id
+	LEFT JOIN schoolroom room on class.schoolroom_id=room.id
+	LEFT JOIN institute i on class.institute_id=i.id
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	<include refid="selectAll"/>
+  	<include refid="conditionSql"/>
+  	limit #{start},#{rows}
+  </select>
+  <!-- 根据班级的名字查询班级的id -->
+  <select id="selectByPrimaryRealname">
+  	select id from schoolclass where name = #{className} 
+  </select>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.TrakcsStudentsMapper" >
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.TrakcsStudents" >
+    <id column="id" property="id"  />
+	<result column="inputTime" property="inputTime"  />
+	<result column="nextTime" property="nextTime"  />
+	<result column="tel" property="tel"  />
+	<result column="digest" property="digest"  />
+	<result column="purpose" property="purpose"  />
+	<result column="qq" property="qq"  />
+	<result column="longTime" property="longTime"  />
+      <result column="picture" property="picture"/>
+
+      <association property="intentionDegree" javaType="com._520it.crm.domain.SystemDictionaryItem" column="intentionDegree"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+      <association property="talkWay" javaType="com._520it.crm.domain.SystemDictionaryItem" column="talkWay"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="employee" javaType="com._520it.crm.domain.Employee" column="employee_id"
+                   select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+      <association property="customerInfo" javaType="com._520it.crm.domain.CustomerInfo" column="customerInfo_id"
+                   select="com._520it.crm.mapper.CustomerInfoMapper.selectByPrimaryKey"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from trakcsStudents where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com._520it.crm.domain.TrakcsStudents" useGeneratedKeys="true" keyProperty="id" >
+    insert into trakcsStudents 
+    (talkWay,inputTime,nextTime,tel,intentionDegree,digest,purpose,employee_id,customerInfo_id,qq,longTime,picture)
+    values 
+    (#{talkWay.name},#{inputTime},#{nextTime},#{tel},#{intentionDegree.name},#{digest},#{purpose},#{employee.id},#{customerInfo.id},#{qq},#{longTime},#{picture})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.TrakcsStudents" >
+    update trakcsStudents
+    set
+	    talkWay=#{talkWay.name},
+	    inputTime=#{inputTime},
+	    nextTime=#{nextTime},
+	    tel=#{tel},
+	    intentionDegree=#{intentionDegree.name},
+	    digest=#{digest},
+	    purpose=#{purpose},
+	    employee_id=#{employee.id},
+	    customerInfo_id=#{customerInfo.id},
+	    qq=#{qq},
+	    longTime=#{longTime},
+	    picture=#{picture}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+    select * from trakcsStudents where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select * from trakcsStudents
+  </select>
+  <sql id="conditionSql">
+  	<where>
+  	</where>
+  </sql>
+  <select id="queryPageCount" resultType="long">
+  	select count(0) from trakcsStudents
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	select * from trakcsStudents
+  	<include refid="conditionSql"/>
+  	limit #{start},#{rows}
+  </select>
+</mapper>

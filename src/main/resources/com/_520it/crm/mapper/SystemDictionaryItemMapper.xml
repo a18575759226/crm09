@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.SystemDictionaryItemMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.domain.SystemDictionaryItem">
+		<id column="id" property="id"/>
+		<result column="intro" property="intro"/>
+		<result column="name" property="name"/>
+
+		<association property="parent" column="parent" select="com._520it.crm.mapper.SystemDictionaryMapper.selectByPrimaryKey"></association>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    delete from systemDictionaryItem where id = #{id}
+  </delete>
+	<insert id="insert" parameterType="com._520it.crm.domain.SystemDictionaryItem" useGeneratedKeys="true"
+			keyProperty="id">
+    insert into systemDictionaryItem 
+    (parent,intro,name)
+    values 
+    (#{parent.id},#{intro},#{name})
+  </insert>
+	<update id="updateByPrimaryKey">
+    update systemDictionaryItem
+    set
+	    parent=#{parent.id},
+	    intro=#{intro},
+	    name=#{name}
+    where id = #{id}
+  </update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from systemDictionaryItem where id = #{id}
+  </select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    select * from systemDictionaryItem
+  </select>
+	<sql id="conditionSql">
+		<where>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from systemDictionaryItem
+		<include refid="conditionSql"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+		select * from systemDictionaryItem
+		<include refid="conditionSql"/>
+		limit #{start},#{rows}
+	</select>
+	<select id="queryPageFromsystemDictionary" resultMap="BaseResultMap">
+		select * from systemDictionaryItem where parent = #{parentId}
+		<include refid="conditionSql"/>
+	</select>
+
+
+	<select id="selectByName" resultMap="BaseResultMap">
+		select * from systemDictionaryItem where name = #{intentionDegree}
+	</select>
+	
+	<select id="selectListByparentName" resultMap="BaseResultMap">
+		select * from systemDictionaryItem where parent =(
+			select id from systemDictionary where sn =#{parentName}
+		)
+	</select>
+
+	<select id="queryDicionaryItemByname" resultMap="BaseResultMap">
+		SELECT  * FROM  systemdictionaryitem WHERE  name = #{name}
+	</select>
+
+
+</mapper>

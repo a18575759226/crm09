@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.BigCustomerMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.domain.BigCustomer">
+		<id column="id" property="id"/>
+		<result column="cooperationSchool" property="cooperationSchool"/>
+		<result column="name" property="name"/>
+		<association property="schoolProperty" javaType="com._520it.crm.domain.SystemDictionaryItem"
+		             select="com._520it.crm.mapper.SystemDictionaryItemMapper.selectByName"
+		             column="schoolProperty"/>
+		<association property="curriculum" javaType="com._520it.crm.domain.SystemDictionaryItem"
+		             select="com._520it.crm.mapper.SystemDictionaryItemMapper.selectByName" column="curriculum"/>
+		<association property="starLevel" javaType="com._520it.crm.domain.SystemDictionaryItem"
+		             select="com._520it.crm.mapper.SystemDictionaryItemMapper.selectByName" column="starLevel"/>
+		<!--<association property="contact" javaType="com._520it.crm.domain.SchoolContact"-->
+					 <!--select="com._520it.crm.mapper.SchoolContactMapper.selectByPrimaryKey" column="contact_id"/>-->
+		<association property="salesman" javaType="com._520it.crm.domain.Employee">
+			<id property="id" column="e_id"/>
+			<result property="realname" column="e_realname"/>
+		</association>
+		<!--发送额外的sql查询高校的实训记录-->
+		<collection property="trainingRecords" ofType="TrainingRecords"
+		            select="com._520it.crm.mapper.TrainingRecordsMapper.listRecordsByBigCustomerId" column="id"/>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    	delete from bigCustomer where id = #{id}
+  	</delete>
+	<insert id="insert" parameterType="com._520it.crm.domain.BigCustomer" useGeneratedKeys="true" keyProperty="id">
+	    insert into bigCustomer
+	    (cooperationSchool,name,schoolProperty,salesman_id,curriculum,starLevel)
+	    values
+	    (#{cooperationSchool},#{name},#{schoolProperty.name},#{salesman.id},#{curriculum.name},#{starLevel.name})
+  	</insert>
+	<update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.BigCustomer">
+    update bigCustomer
+    set
+	    cooperationSchool=#{cooperationSchool},
+	    name=#{name},
+	    schoolProperty=#{schoolProperty.name},
+	    salesman_id=#{salesman.id},
+	    curriculum=#{curriculum.name},
+	    starLevel=#{starLevel.name}
+    where id = #{id}
+  </update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from bigCustomer where id = #{id}
+  </select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    select big.*,e.id as e_id,e.realname as e_realname from bigCustomer big LEFT JOIN  employee e ON big.salesman_id = e.id
+  </select>
+	<sql id="conditionSql">
+		<where>
+			<if test="keyword!=null and keyword!=''">
+				AND big.name LIKE concat("%",#{keyword},"%")
+			</if>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from bigCustomer big
+		<include refid="conditionSql"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+		select big.*,e.id as e_id,e.realname as e_realname from bigCustomer big
+		 LEFT JOIN  employee e ON big.salesman_id = e.id
+		<include refid="conditionSql"/>
+		limit #{start},#{rows}
+	</select>
+</mapper>

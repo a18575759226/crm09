@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.SchoolContactMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.domain.SchoolContact">
+		<id column="id" property="id"/>
+		<result column="birthday" property="birthday"/>
+		<result column="qq" property="qq"/>
+		<result column="name" property="name"/>
+		<result column="tel" property="tel"/>
+		<result column="email" property="email"/>
+		<result column="hobby" property="hobby"/>
+		<association property="gender" javaType="com._520it.crm.domain.SystemDictionaryItem"
+		             select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"
+		             column="gender"/>
+		<association property="school" javaType="com._520it.crm.domain.BigCustomer">
+			<id property="id" column="b_id"/>
+			<id property="name" column="b_name"/>
+		</association>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    delete from schoolContact where id = #{id}
+  </delete>
+	<insert id="insert" parameterType="com._520it.crm.domain.SchoolContact" useGeneratedKeys="true" keyProperty="id">
+    insert into schoolContact 
+    (birthday,qq,gender,school_id,name,tel,email,hobby)
+    values 
+    (#{birthday},#{qq},#{gender.name},#{school.id},#{name},#{tel},#{email},#{hobby})
+  </insert>
+	<update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.SchoolContact">
+    update schoolContact
+    set
+	    birthday=#{birthday},
+	    qq=#{qq},
+	    gender=#{gender.name},
+	    school_id=#{school.id},
+	    name=#{name},
+	    tel=#{tel},
+	    email=#{email},
+	    hobby=#{hobby}
+    where id = #{id}
+  </update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from schoolContact where id = #{id}
+  </select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    select * from schoolContact
+  </select>
+	<sql id="conditionSql">
+		<where>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from schoolContact
+		<include refid="conditionSql"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+		select sc.*,b.id as b_id,b.name as b_name from schoolContact sc LEFT JOIN bigcustomer b ON sc.school_id = b.id
+		<include refid="conditionSql"/>
+		limit #{start},#{rows}
+	</select>
+</mapper>

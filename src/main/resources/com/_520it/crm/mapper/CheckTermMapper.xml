@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.CheckTermMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.domain.CheckTerm">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="signIp" property="signIp"/>
+		<result column="signInTime" property="signInTime"/>
+		<result column="signOutTime" property="signOutTime"/>
+		<result column="state" property="state"/>
+		<result column="patchTime" property="patchTime"/>
+		<association property="e" javaType="com._520it.crm.domain.Employee">
+			<id column="id" property="id"></id>
+			<result column="name" property="username"></result>
+		</association>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    delete from checkTerm where id = #{id}
+  </delete>
+	<insert id="insert" parameterType="com._520it.crm.domain.CheckTerm" useGeneratedKeys="true" keyProperty="id">
+    insert into checkTerm 
+    (name,signIp,signInTime,state,empId)
+    values 
+    (#{name},#{signIp},#{signInTime},#{state},#{e.id})
+  </insert>
+	<!--签退SQL -->
+	<update id="updateForSignOut">
+	update checkTerm
+    set signOutTime = #{signInTime},state=#{state}
+    where id = #{id}
+	</update>
+	<!--补签SQL -->
+	<update id="updateForPatch">
+		update checkTerm
+    set patchTime = #{patchTime}
+    where id = #{id}
+	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from checkTerm where id = #{id}
+  </select>
+	<select id="selectByEmpId" resultMap="BaseResultMap" parameterType="long">
+		select * from checkTerm where empId = #{empId}
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    select * from checkTerm
+  </select>
+
+	<sql id="signInTimeSql">
+		<where>
+			<if test="beginDate!=null">
+				and signInTime &gt; #{beginDate}
+			</if>
+			<if test="endDate!=null">
+				and signInTime &lt; #{endDate}
+			</if>
+			<if test="empId">
+				and empId=#{empId}
+			</if>
+		</where>
+	</sql>
+	<sql id="signOutTimeSql">
+		<where>
+			<if test="beginDate!=null">
+				and signOutTime &gt; #{beginDate}
+			</if>
+			<if test="endDate!=null">
+				and signOutTime &lt; #{endDate}
+			</if>
+			<if test="empId">
+				and empId=#{empId}
+			</if>
+		</where>
+	</sql>
+	<!--高级查询sql -->
+	<sql id="searchContent">
+		<where>
+			<if test="state>-1">
+				and state = #{state}
+			</if>
+			<if test="beginDate!=null">
+				and signInTime &gt;= #{beginDate}
+			</if>
+			<if test="endDate!=null">
+				and signInTime &lt;= #{endDate}
+			</if>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from checkTerm
+		<include refid="searchContent"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+		select * from checkTerm
+		<include refid="searchContent"/>
+		limit #{start},#{rows}
+	</select>
+
+	<select id="querySignInTimeByEmpIdAndDayTime" resultType="com._520it.crm.domain.CheckTerm">
+		select * from checkTerm
+		<include refid="signInTimeSql"/>
+	</select>
+	<select id="querySignOutTimeByEmpIdAndDayTime" resultType="com._520it.crm.domain.CheckTerm">
+		select * from checkTerm
+		<include refid="signOutTimeSql"/>
+	</select>
+	<select id="selectByEmpIdAndDayTime" resultType="com._520it.crm.domain.CheckTerm">
+		select * from checkTerm
+		<include refid="signInTimeSql"/>
+	</select>
+	<select id="selectByCondition" resultType="com._520it.crm.domain.CheckTerm">
+		select * from checkTerm
+		<include refid="searchContent"/>
+	</select>
+</mapper>

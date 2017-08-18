@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.PotentialCustomerMapper" >
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.PotentialCustomer" >
+    <id column="id" property="id"  />
+	<result column="email" property="email"  />
+	<result column="inputTime" property="inputTime"  />
+	<result column="age" property="age"  />
+	<result column="name" property="name"  />
+	<result column="tel" property="tel"  />
+	<result column="gender" property="gender"  />
+	<result column="qq" property="qq"  />
+	<result column="customerInfo_id" property="customerInfo_id"  />
+
+      <association property="inputUser" javaType="com._520it.crm.domain.Employee" column="inputUser_id"
+                   select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+      <association property="inChargeUser" javaType="com._520it.crm.domain.Employee" column="inChargeUser_id"
+                   select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+
+      <association property="customerSource" javaType="com._520it.crm.domain.SystemDictionaryItem" column="customerSource"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from potentialCustomer where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com._520it.crm.domain.PotentialCustomer" useGeneratedKeys="true" keyProperty="id" >
+    insert into potentialCustomer 
+    (customerSource,email,inputTime,age,name,tel,gender,inChargeUser_id,inputUser_id,qq,customerInfo_id)
+    values 
+    (#{customerSource.name},#{email},#{inputTime},#{age},#{name},#{tel},#{gender},#{inChargeUser.id},#{inputUser.id},#{qq},#{customerInfo_id})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.PotentialCustomer" >
+    update potentialCustomer
+    set
+	    customerSource=#{customerSource.name},
+	    email=#{email},
+	    inputTime=#{inputTime},
+	    age=#{age},
+	    name=#{name},
+	    tel=#{tel},
+	    gender=#{gender},
+	    inChargeUser_id=#{inChargeUser.id},
+	    inputUser_id=#{inputUser.id},
+	    qq=#{qq},
+	    customerInfo_id=#{customerInfo_id}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+    select * from potentialCustomer where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select * from potentialCustomer
+  </select>
+  <sql id="conditionSql">
+  	<where>
+  	</where>
+  </sql>
+  <select id="queryPageCount" resultType="long">
+  	select count(0) from potentialCustomer
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	select * from potentialCustomer
+  	<include refid="conditionSql"/>
+  	limit #{start},#{rows}
+  </select>
+</mapper>

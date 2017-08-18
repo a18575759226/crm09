@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.ReceiptManageMapper" >
+    <resultMap id="BaseResultMap" type="com._520it.crm.domain.ReceiptManage">
+        <id column="id" property="id"/>
+        <result column="gatherTime" property="gatherTime"/>
+        <result column="remark" property="remark"/>
+        <result column="invoice" property="invoice"/>
+        <result column="getherSum" property="getherSum"/>
+        <result column="way" property="way"/>
+        <result column="gatheringType" property="gatheringType"/>
+        <result column="bills" property="bills"/>
+
+        <!--<result column="receiver" property="receiver"  />
+        <result column="student" property="student"  />
+        <result column="student" property="room"  />
+        <result column="subject" property="subject"  />
+        <result column="salesman" property="salesman"  />-->
+        <association property="receiver" javaType="com._520it.crm.domain.Employee" column="receiver_id"
+                     select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"></association>
+        <association property="student" javaType="com._520it.crm.domain.CustomerInfo" column="student_id"
+                     select="com._520it.crm.mapper.CustomerInfoMapper.selectByPrimaryKey"></association>
+        <association property="room" javaType="com._520it.crm.domain.SchoolClass" column="room_id"
+                     select="com._520it.crm.mapper.SchoolClassMapper.selectByPrimaryKey"></association>
+        <association property="subject" javaType="com._520it.crm.domain.SystemDictionaryItem"
+                     select="com._520it.crm.mapper.SystemDictionaryItemMapper.selectByName"
+                     column="subject"></association>
+        <association property="salesman" javaType="com._520it.crm.domain.Employee" column="salesman_id"
+                     select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"></association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="long">
+    delete from receiptManage where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="com._520it.crm.domain.ReceiptManage" useGeneratedKeys="true" keyProperty="id">
+    insert into receiptManage 
+    (salesman_id,gatherTime,receiver_id,student_id,remark,invoice,subject,getherSum,way,gatheringType,bills,room_id)
+    values 
+    (#{salesman.id},#{gatherTime},#{receiver.id},#{student.id},#{remark},#{invoice},#{subject.name},#{getherSum},#{way},#{gatheringType},#{bills},#{room.id})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.ReceiptManage">
+    update receiptManage
+    set
+	    salesman_id=#{salesman.id},
+	    gatherTime=#{gatherTime},
+	    receiver_id=#{receiver.id},
+	    student_id=#{student.id},
+	    remark=#{remark},
+	    invoice=#{invoice},
+	    subject=#{subject.name},
+	    getherSum=#{getherSum},
+	    way=#{way},
+	    gatheringType=#{gatheringType},
+	    bills=#{bills},
+	    room_id=#{room.id}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from receiptManage where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select * from receiptManage
+  </select>
+    <sql id="conditionSql">
+        <where>
+        </where>
+    </sql>
+    <select id="queryPageCount" resultType="long">
+        select count(0) from receiptManage
+        <include refid="conditionSql"/>
+    </select>
+    <select id="queryPageData" resultMap="BaseResultMap">
+        select * from receiptManage
+        <include refid="conditionSql"/>
+        limit #{start},#{rows}
+    </select>
+    <select id="expendMethodByReceiptManage" resultType="com._520it.crm.page.PageResult">
+		select * from receiptmanage
+	</select>
+
+</mapper>

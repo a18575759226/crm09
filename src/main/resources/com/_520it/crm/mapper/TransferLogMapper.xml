@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.TransferLogMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.domain.TransferLog">
+		<id column="id" property="id"/>
+		<result column="checkTime" property="checkTime"/>
+		<result column="overTime" property="overTime"/>
+		<result column="remark" property="remark"/>
+		<result column="state" property="state"/>
+
+		<association property="accepter" javaType="Employee">
+			<id property="id" column="a_id"/>
+			<result property="realname" column="a_realname"/>
+		</association>
+		<association property="currentPrincipal" javaType="Employee">
+			<id property="id" column="c_id"/>
+			<result property="realname" column="c_realname"/>
+		</association>
+		<association property="checker" javaType="Employee">
+			<id property="id" column="ch_id"/>
+			<result property="realname" column="ch_realname"/>
+		</association>
+		<association property="customer" javaType="CustomerInfo"
+		             select="com._520it.crm.mapper.CustomerInfoMapper.selectByPrimaryKey" column="customer_id"/>
+
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    delete from transferLog where id = #{id}
+  	</delete>
+	<insert id="insert" parameterType="com._520it.crm.domain.TransferLog" useGeneratedKeys="true" keyProperty="id">
+	    insert into transferLog
+	    (checkTime,overTime,currentPrincipal_id,remark,accepter_id,state,customer_id,checker_id)
+	    values
+	    (#{checkTime},#{overTime},#{currentPrincipal.id},#{remark},#{accepter.id},#{state},#{customer.id},#{checker.id})
+  	</insert>
+	<update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.TransferLog">
+    update transferLog
+    set
+	    checkTime=#{checkTime},
+	    overTime=#{overTime},
+	    currentPrincipal_id=#{currentPrincipal.id},
+	    remark=#{remark},
+	    accepter_id=#{accepter.id},
+	    state=#{state},
+	    customer_id=#{customer.id},
+	    checker_id = #{checker.id}
+    where id = #{id}
+  	</update>
+	<!--更改移交记录的状态-->
+	<update id="updateState">
+		UPDATE transferlog SET state = #{state},checker_id = #{checker.id},checkTime =#{checkTime} where id = #{id}
+	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+		select tr.*,e.id a_id ,e.realname a_realname,ec.id ch_id ,ec.realname ch_realname,pe.id c_id,pe.realname c_realname  from transferLog tr LEFT JOIN employee e
+		ON tr.accepter_id = e.id LEFT JOIN employee ec ON tr.checker_id = ec.id LEFT JOIN employee pe ON tr.currentPrincipal_id = pe.id
+		where tr.id = #{id}
+  	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    	select * from transferLog
+  	</select>
+	<sql id="conditionSql">
+		<where>
+			<if test="overUserId!=null">
+				tr.currentPrincipal_id = #{overUserId} or tr.accepter_id = #{overUserId}
+			</if>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from transferLog tr
+		<include refid="conditionSql"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+		select tr.*,e.realname a_realname,ec.realname ch_realname,pe.realname c_realname  from transferLog tr LEFT JOIN employee e ON tr.accepter_id = e.id LEFT JOIN employee ec ON tr.checker_id = ec.id LEFT JOIN employee pe ON tr.currentPrincipal_id = pe.id
+		<include refid="conditionSql"/>
+		limit #{start},#{rows}
+	</select>
+	<!--通过客户id查询移交记录-->
+	<select id="getLogByCustomerId" resultType="com._520it.crm.domain.TransferLog">
+		SELECT * FROM transferlog WHERE customer_id = #{customerId} and state = 0
+	</select>
+</mapper>

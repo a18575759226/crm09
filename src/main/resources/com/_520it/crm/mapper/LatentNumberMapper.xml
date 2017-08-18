@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.LatentNumberMapper">
+    <select id="queryLatentNumber" resultType="com._520it.crm.domain.LatentNumber">
+        SELECT la.inputtime,(e.username) marketingMan,count(c.id)
+        clientNumber FROM latentnumber la INNER JOIN customerinfo c ON
+        la.clientNumber_id = c.id
+        INNER JOIN employee e ON la.marketingMan_id = e.id
+        <include refid="conditionSql"/>
+        GROUP BY e.username
+    </select>
+        <sql id="conditionSql">
+            <if test="keyword!=null and keyword!=''">
+                and (e.realname like concat('%',#{keyword},'%') or e.username like concat('%',#{keyword},'%'))
+            </if>
+            <if test="beginDate!=null">
+                and la.inputtime &gt;=#{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and la.inputtime &lt;=#{endDate}
+            </if>
+        </sql>
+</mapper>

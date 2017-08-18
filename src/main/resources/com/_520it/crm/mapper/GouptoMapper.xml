@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.GouptoMapper">
+    <resultMap id="BaseResultMap" type="com._520it.crm.domain.Goupto">
+        <id column="id" property="id"/>
+        <result column="salesman" property="salesman"/>
+        <result column="otherCosts" property="otherCosts"/>
+        <result column="phone" property="phone"/>
+        <result column="salesWater" property="salesWater"/>
+        <result column="qq" property="qq"/>
+        <result column="state" property="state"/>
+        <result column="realName" property="realName"/>
+        <result column="receiptAmount" property="receiptAmount"/>
+        <result column="intoClass" property="intoClass"/>
+        <result column="receiptTime" property="receiptTime"/>
+        <result column="oldClass" property="oldClass"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="long">
+    delete from goupto where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="com._520it.crm.domain.Goupto" useGeneratedKeys="true" keyProperty="id">
+    insert into goupto 
+    (salesman,otherCosts,phone,salesWater,qq,state,realName,receiptAmount,intoClass,receiptTime,oldClass)
+    values 
+    (#{salesman},#{otherCosts},#{phone},#{salesWater},#{qq},#{state},#{realName},#{receiptAmount},#{intoClass},#{receiptTime},#{oldClass})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.Goupto">
+    update goupto
+    set
+	    salesman=#{salesman},
+	    otherCosts=#{otherCosts},
+	    phone=#{phone},
+	    salesWater=#{salesWater},
+	    qq=#{qq},
+	    state=#{state},
+	    realName=#{realName},
+	    receiptAmount=#{receiptAmount},
+	    intoClass=#{intoClass},
+	    receiptTime=#{receiptTime},
+	    oldClass=#{oldClass}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from goupto where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select * from goupto
+  </select>
+    <sql id="conditionSql">
+        <where>
+            <if test="keyword!=null">
+                (realName like concat('%',#{keyword},'%')or qq like concat('%',#{keyword},'%'))
+            </if>
+        </where>
+    </sql>
+    <select id="queryPageCount" resultType="long">
+        select count(0) from goupto
+        <include refid="conditionSql"/>
+    </select>
+    <select id="queryPageData" resultMap="BaseResultMap">
+        select * from goupto
+        <include refid="conditionSql"/>
+        limit #{start},#{rows}
+    </select>
+</mapper>

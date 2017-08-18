@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.CustomerInfoMapper" >
+
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.CustomerInfo" >
+    <id column="id" property="id"  />
+	<result column="birthday" property="birthday"  />
+	<result column="gender" property="gender"  />
+	<result column="introducer" property="introducer"  />
+	<result column="attentionMatter" property="attentionMatter"  />
+	<result column="inputTime" property="inputTime"  />
+	<result column="appointmentTime" property="appointmentTime"  />
+	<result column="tel" property="tel"  />
+	<result column="state" property="state"  />
+	<result column="email" property="email"  />
+	<result column="qq" property="qq"  />
+	<result column="address" property="address"  />
+	<result column="identityCard" property="identityCard"  />
+	<result column="paymentWay" property="paymentWay"  />
+	<result column="isPledge" property="isPledge"  />
+	<result column="name" property="name"  />
+	<result column="age" property="age"  />
+
+      <association property="intentionDegree" javaType="com._520it.crm.domain.SystemDictionaryItem" column="intentionDegree"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="territory" javaType="com._520it.crm.domain.SystemDictionaryItem" column="territory"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="educationalHistory" javaType="com._520it.crm.domain.SystemDictionaryItem" column="educationalHistory"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="major" javaType="com._520it.crm.domain.SystemDictionaryItem" column="major"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="workingCondition" javaType="com._520it.crm.domain.SystemDictionaryItem" column="workingCondition"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="customerSource" javaType="com._520it.crm.domain.SystemDictionaryItem" column="customerSource"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="intentionDiscipline" javaType="com._520it.crm.domain.SystemDictionaryItem" column="intentionDiscipline"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+
+      <association property="intentionSchool" javaType="com._520it.crm.domain.SystemDictionaryItem" column="intentionSchool"
+                   select="com._520it.crm.mapper.SystemDictionaryItemMapper.queryDicionaryItemByname"></association>
+      <!--关联录入人和负责人-->
+	  <!--<result column="inputUser" property="inputUser"  />-->
+	  <!--<result column="principal" property="principal"  />-->
+      <association property="inputUser" javaType="com._520it.crm.domain.Employee" column="inputUser_id"
+                   select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+      <association property="principal" javaType="com._520it.crm.domain.Employee" column="principal_id"
+                   select="com._520it.crm.mapper.EmployeeMapper.selectByPrimaryKey"/>
+      <!--关联班级-->
+      <association property="classId" column="class_id" javaType="com._520it.crm.domain.SchoolClass"
+                   select="com._520it.crm.mapper.SchoolClassMapper.selectByPrimaryKey"></association>
+   </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from customerInfo where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com._520it.crm.domain.CustomerInfo" useGeneratedKeys="true" keyProperty="id" >
+    insert into customerInfo 
+    (birthday,gender,introducer,attentionMatter,inputTime,appointmentTime,tel,state,email,qq,address,identityCard,paymentWay,isPledge,name,age
+    ,intentionDegree,territory,educationalHistory,major,workingCondition,customerSource,intentionDiscipline,intentionSchool,inputUser_id,principal_id,class_id,way,allTuitiong,surplus,yetPay,payState)
+    values 
+    (#{birthday},#{gender},#{introducer},#{attentionMatter},#{inputTime},#{appointmentTime},#{tel},
+    #{state},#{email},#{qq},#{address},#{identityCard},#{paymentWay},#{isPledge},#{name},#{age}
+    ,#{intentionDegree.name},#{territory.name},#{educationalHistory.name},#{major.name},#{workingCondition.name},#{customerSource.name},#{intentionDiscipline.name},#{intentionSchool.name},#{inputUser.id},#{principal.id},#{classId.id},#{way},#{allTuitiong},#{surplus},#{yetPay},#{payState})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.CustomerInfo" >
+    update customerInfo
+    set
+        intentionDegree=#{intentionDegree.name},
+        territory=#{territory.name},
+        educationalHistory=#{educationalHistory.name},
+        major=#{major.name},
+        workingCondition=#{workingCondition.name},
+        customerSource=#{customerSource.name},
+        intentionDiscipline=#{intentionDiscipline.name},
+        intentionSchool=#{intentionSchool.name},
+        inputUser_id=#{inputUser.id},
+        principal_id=#{principal.id},
+        class_id=#{classId.id},
+	    birthday=#{birthday},
+	    gender=#{gender},
+	    introducer=#{introducer},
+	    inputTime=#{inputTime},
+	    appointmentTime=#{appointmentTime},
+	    tel=#{tel},
+	    state=#{state},
+	    email=#{email},
+	    qq=#{qq},
+	    address=#{address},
+	    identityCard=#{identityCard},
+	    paymentWay=#{paymentWay},
+	    isPledge=#{isPledge},
+	    name=#{name},
+	    way=#{way},
+	    age=#{age},
+	    allTuitiong=#{allTuitiong},
+	    surplus=#{surplus},
+	    yetPay=#{yetPay},
+	    payState=#{payState}
+    where id = #{id}
+  </update>
+    <update id="becomeFormalStudent">
+        update customerInfo set state = 1 WHERE id = #{customerInfoId}
+    </update>
+
+    <update id="moveToPotentialClientPool">
+        update customerInfo set state = 2 WHERE id = #{customerInfoId}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+    select * from customerInfo where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select * from customerInfo
+  </select>
+  <sql id="conditionSql">
+  	<where>
+        <if test="keyword!=null and keyword!=''">
+          and  (name like  concat('%',#{keyword},'%') or tel like  concat('%',#{keyword},'%') )
+        </if>
+        <if test="name!=null and name!=''">
+          and  name = #{name}
+        </if>
+        <if test="gender!=null">
+          and  gender = #{gender}
+        </if>
+        <if test="age!=null">
+          and  age = #{age}
+        </if>
+        <if test="tel!=null and tel!=''">
+          and  tel = #{tel}
+        </if>
+        <if test="qq!=null and qq!=''">
+          and  qq = #{qq}
+        </if>
+        <if test="email!=null and email!=''">
+          and  email = #{email}
+        </if>
+        <if test="intentionDisciplineName!=null and intentionDisciplineName!=''">
+          and  intentionDiscipline = #{intentionDisciplineName}
+        </if>
+        <if test="intentionDegreeName!=null and intentionDegreeName!=''">
+          and  intentionDegree = #{intentionDegreeName}
+        </if>
+        <if test="intentionSchoolName!=null and intentionSchoolName!=''">
+          and  intentionSchool = #{intentionSchoolName}
+        </if>
+        <if test="introducer!=null and introducer!=''">
+          and  introducer = #{introducer}
+        </if>
+        <if test="customerSourceName!=null and customerSourceName!=''">
+          and  customerSource = #{customerSourceName}
+        </if>
+        <if test="territoryName!=null and territoryName!=''">
+          and  territory = #{territoryName}
+        </if>
+        <if test="adress!=null and adress!=''">
+          and  adress = #{adress}
+        </if>
+        <if test="inputUserId!=null">
+          and  principal_id = #{inputUserId}
+        </if>
+        <if test="beginAppointmentTime!=null and beginAppointmentTime!=''">
+          and  appointmentTime &gt; #{beginAppointmentTime}
+        </if>
+        <if test="endAppointmentTime!=null and endAppointmentTime!=''">
+          and  appointmentTime &lt; #{endAppointmentTime}
+        </if>
+        <if test="beginInputTime!=null and beginInputTime!=''">
+          and  inputTime &gt; #{beginInputTime}
+        </if>
+        <if test="endInputTime!=null and endInputTime!=''">
+          and  inputTime &lt; #{endInputTime}
+        </if>
+        <if test="state>-1 and state!=1 and state!= 3">
+            and state = #{state}
+        </if>
+        <if test=" state==1 or state== 4">
+            and (state = 1 or state = 4 )
+        </if>
+        <if test="classId!=null">
+            and class_id=#{classId}
+        </if>
+  	</where>
+  </sql>
+  <select id="queryPageCount" resultType="long">
+  	select count(0) from customerInfo
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	select * from customerInfo
+  	<include refid="conditionSql"/>
+  	limit #{start},#{rows}
+  </select>
+    
+    <select id="selectAllByState" resultMap="BaseResultMap">
+        select * from customerInfo where state = #{state}
+    </select>
+
+    <select id="queryPageDataByState" resultType="com._520it.crm.domain.CustomerInfo">
+        select * from customerInfo
+        <include refid="conditionSql"/>
+        limit #{start},#{rows}
+    </select>
+
+    <update id="updateClassId">
+        update customerInfo SET class_id=#{classId.id} where id =#{id}
+    </update>
+	<!--更改潜在客户的负责人-->
+	<update id="updatePrincipal">
+		UPDATE customerinfo SET principal_id = #{principalId} where id = #{customerId}
+	</update>
+
+</mapper>

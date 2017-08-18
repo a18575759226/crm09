@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.ExamMapper" >
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.Exam" >
+    <id column="id" property="id"  />
+	<result column="examDate" property="examDate"  />
+	<result column="examResult" property="examResult"  />
+	<result column="sn" property="sn"  />
+	<result column="remark" property="remark"  />
+	<result column="coursename" property="coursename"  />
+	<association property="customerInfo" javaType="com._520it.crm.domain.CustomerInfo">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+		<result property="qq" column="c_qq"/>
+		<result property="tel" column="c_tel"/>
+	</association>
+	<association property="schoolroom" javaType="Schoolroom">
+		<id property="id" column="s_id"/>
+		<result property="name" column="s_name"/>
+	</association>
+	<association property="employee" javaType="Employee">
+		<id property="id" column="e_id"/>
+		<result property="realname" column="realname"/>
+	</association>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from exam where id = #{id}
+  </delete>
+ <insert id="insert" parameterType="com._520it.crm.domain.Exam" useGeneratedKeys="true" keyProperty="id" >
+    insert into exam 
+    (examDate,examResult,sn,remark,customerInfo_id,coursename,schoolroom_id)
+    values 
+    (#{examDate},#{examResult},#{sn},#{remark},#{customerInfo.id},#{coursename},#{schoolroom.id})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.Exam" >
+    update exam
+    set
+	    examDate=#{examDate},
+	    sn=#{sn},
+	    remark=#{remark},
+	    customerInfo_id=#{customerInfo.id},
+	    coursename=#{coursename},
+	    schoolroom_id=#{schoolroom.id}
+    where id = #{id}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+    select * from exam where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    <include refid="basicSql"/>
+  </select>
+  <sql id="basicSql">
+  	select exam.*,c.id c_id,c.name c_name,c.qq c_qq,c.tel c_tel,
+	e.id e_id,e.realname realname,s.id s_id,s.name s_name
+	from exam exam 
+	left join customerinfo c on exam.customerInfo_id=c.id
+	left join employee e on exam.employee_id=e.id
+	left join schoolroom s on exam.schoolroom_id=s.id
+  </sql>
+  <sql id="conditionSql">
+  	<where>
+  		<if test="keyword!=null">
+  			( exam.coursename like concat('%',#{keyword},'%') or
+  			exam.sn like concat('%',#{keyword},'%') )
+  		</if>
+  	</where>
+  </sql>
+  <select id="queryPageCount" resultType="long">
+  	select count(*)
+	from exam exam 
+	left join customerinfo c on exam.customerInfo_id=c.id
+	left join employee e on exam.employee_id=e.id
+	left join schoolroom s on exam.schoolroom_id=s.id
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	<include refid="basicSql"/>
+  	<include refid="conditionSql"/>
+  	limit #{start},#{rows}
+  </select>
+  <update id="checkByPrimaryKey" parameterType="com._520it.crm.domain.Exam">
+  		update exam set 
+  		employee_id=#{employee.id},
+  		examResult=#{examResult}
+  		where id = #{id}
+  </update>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.InstituteMapper" >
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.Institute" >
+    <id column="id" property="id"  />
+	<result column="sn" property="sn"  />
+	<result column="name" property="name"  />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from institute where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com._520it.crm.domain.Institute" useGeneratedKeys="true" keyProperty="id" >
+    insert into institute 
+    (sn,name)
+    values 
+    (#{sn},#{name})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.Institute" >
+    update institute
+    set
+	    sn=#{sn},
+	    name=#{name}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+    select * from institute where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select * from institute
+  </select>
+  <sql id="conditionSql">
+  	<where>
+  	</where>
+  </sql>
+  <select id="queryPageCount" resultType="long">
+  	select count(*) from institute
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	select * from institute
+  	<include refid="conditionSql"/>
+  	limit #{start},#{rows}
+  </select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.CheckOutMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.vo.CheckOut">
+		<result column="name" property="name"/>
+		<result column="state" property="state"/>
+		<result column="times" property="times"/>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    delete from checkOut where id = #{id}
+  </delete>
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    insert into checkOut 
+    (signInTime,signOutTime,days,name)
+    values 
+    (#{signInTime},#{signOutTime},#{days},#{name})
+  </insert>
+	<update id="updateByPrimaryKey">
+    update checkOut
+    set
+	    signInTime=#{signInTime},
+	    signOutTime=#{signOutTime},
+	    days=#{days},
+	    name=#{name}
+    where id = #{id}
+  </update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from checkOut where id = #{id}
+  </select>
+	<select id="selectAll" resultMap="BaseResultMap">
+     select e.realname name,ct.state state ,count(*) times from employee e
+	  LEFT JOIN checkterm ct on (e.id=ct.empId)
+	  GROUP BY e.username
+  </select>
+	<sql id="conditionSql">
+		<where>
+			<if test="state>-1">
+				and ct.state = #{state}
+			</if>
+			<if test="beginDate!=null">
+				and ct.signInTime &gt;= #{beginDate}
+			</if>
+			<if test="endDate!=null">
+				and ct.signInTime &lt;= #{endDate}
+			</if>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from checkOut
+		<include refid="conditionSql"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+
+		<include refid="conditionSql"/>
+	</select>
+	<select id="selectByCondition" resultType="com._520it.crm.vo.CheckOut">
+		select e.realname name,ifnull(ct.state, -1) state,count(*) times from employee e
+		LEFT JOIN  checkterm ct on (e.id=ct.empId)
+		<include refid="conditionSql"/>
+		GROUP BY e.username
+	</select>
+</mapper>

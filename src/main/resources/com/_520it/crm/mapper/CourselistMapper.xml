@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.CourselistMapper" >
+  <resultMap id="BaseResultMap" type="com._520it.crm.domain.Courselist" >
+    <id column="id" property="id"  />
+    <result column="course" property="course"/>
+	<result column="weekday" property="weekday"  />
+	<result column="remark" property="remark"  />
+	<result column="state" property="state"  />
+	<result column="date" property="date"  />
+	<result column="coursename" property="coursename"  />
+	<association property="teacher" javaType="Employee">
+		<id property="id" column="t_id"/>
+		<result property="realname" column="t_name"/>
+	</association>
+	<association property="schoolclass" javaType="SchoolClass">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+	</association>
+	<association property="schoolroom" javaType="Schoolroom">
+		<id property="id" column="r_id"/>
+		<result property="name" column="r_name"/>
+	</association>
+	<association property="headTeacher" javaType="Employee">
+		<id property="id" column="h_id"/>
+		<result property="realname" column="h_name"/>
+	</association>
+
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="long" >
+    delete from courselist where id = #{id}
+  </delete>
+  
+  <insert id="insert" parameterType="com._520it.crm.domain.Courselist" useGeneratedKeys="true" keyProperty="id" >
+    insert into courselist 
+    (course,headTeacher_id,schoolroom_id,weekday,remark,state,schoolclass_id,date,teacher_id,coursename)
+    values 
+    (#{course},#{headTeacher.id},#{schoolroom.id},#{weekday},#{remark},#{state},#{schoolclass.id},#{date},#{teacher.id},#{coursename})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.Courselist" >
+    update courselist
+    set
+    	weekday=#{weekday},
+    	course=#{course},
+	    schoolroom_id=#{schoolroom.id},
+	    schoolclass_id=#{schoolclass.id},
+	    remark=#{remark},
+	    date=#{date},
+	    teacher_id=#{teacher.id},
+	    coursename=#{coursename}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long" >
+     <include refid="selectList"/>
+     where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    <include refid="selectList"/>
+  </select>
+  
+  <sql id="conditionSql">
+  	<where>
+  		<if test="schoolclassId!=null and schoolclassId!=-1">
+  			and list.schoolclass_id=#{schoolclassId} 
+  		</if>
+  		<if test="schoolroomId!=null and schoolroomId!=-1">
+  			and list.schoolroom_id=#{schoolroomId} 
+  		</if>
+  		<if test="teacherId!=null and teacherId!=-1">
+  			and list.teacher_id=#{teacherId} 
+  		</if>
+  	</where>
+  </sql>
+  <sql id="selectList">
+  	select list.id,list.course,list.date,list.weekday,list.coursename,list.remark,list.state,c.id c_id,c.name c_name,
+	t.id t_id,t.realname t_name,r.id r_id,r.name r_name,h.id h_id,h.realname h_name 
+	from courselist list 
+	LEFT JOIN schoolclass c on list.schoolclass_id=c.id
+	LEFT JOIN employee h on list.headteacher_id=h.id
+	LEFT JOIN schoolroom r on list.schoolroom_id=r.id
+	LEFT JOIN employee t on list.teacher_id=t.id 
+  </sql>
+  
+  <select id="queryPageCount" resultType="long">
+  	select count(*)
+	from courselist list 
+	LEFT JOIN schoolclass c on list.schoolclass_id=c.id
+	LEFT JOIN employee h on list.headteacher_id=h.id
+	LEFT JOIN schoolroom r on list.schoolroom_id=r.id
+	LEFT JOIN employee t on list.teacher_id=t.id
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryPageData" resultMap="BaseResultMap">
+  	<include refid="selectList"/>
+  	<include refid="conditionSql"/>
+  	ORDER BY list.date,list.course asc
+  	limit #{start},#{rows}
+  </select>
+  <!-- 审核操作 -->
+  <update id="checkBycourselistId" parameterType="long">
+  		update courselist set state = '1' where id = #{courselistId}
+  </update>
+</mapper>

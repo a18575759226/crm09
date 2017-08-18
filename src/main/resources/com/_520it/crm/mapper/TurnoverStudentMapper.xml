@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.TurnoverStudentMapper">
+    <resultMap id="BaseResultMap" type="com._520it.crm.domain.TurnoverStudent">
+        <id column="id" property="id"/>
+        <result column="turnoverCause" property="turnoverCause"/>
+        <result column="phone" property="phone"/>
+        <result column="campPersonnel" property="campPersonnel"/>
+        <result column="turnoverClass" property="turnoverClass"/>
+        <result column="turnoverPhase" property="turnoverPhase"/>
+        <result column="state" property="state"/>
+        <result column="studentName" property="studentName"/>
+        <result column="turnoverDate" property="turnoverDate"/>
+        <result column="whetherReund" property="whetherReund"/>
+        <result column="enteringPersonnel" property="enteringPersonnel"/>
+        <result column="schoolDate" property="schoolDate"/>
+        <result column="qq" property="qq"/>
+
+        <association property="rec_tur" javaType="com._520it.crm.domain.CustomerInfo" column="rec_tur"
+                     select="com._520it.crm.mapper.CustomerInfoMapper.selectByPrimaryKey">
+            <!--<result column="rec_tur" property="id"/>-->
+
+        </association>
+
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="long">
+    delete from turnoverStudent where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="com._520it.crm.domain.TurnoverStudent" useGeneratedKeys="true" keyProperty="id">
+    insert into turnoverStudent 
+    (rec_tur,turnoverCause,phone,campPersonnel,turnoverClass,turnoverPhase,state,studentName,turnoverDate,whetherReund,enteringPersonnel,schoolDate,qq)
+    values 
+    (#{rec_tur.id},#{turnoverCause},#{rec_tur.tel},#{campPersonnel},#{rec_tur.classId.name},#{turnoverPhase},#{state},#{rec_tur.name},#{turnoverDate},#{whetherReund},#{enteringPersonnel},#{schoolDate},#{rec_tur.qq})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.TurnoverStudent">
+    update turnoverStudent
+    set
+        rec_tur=#{rec_tur.id},
+	    turnoverCause=#{turnoverCause},
+	    phone=#{phone},
+	    campPersonnel=#{campPersonnel},
+	    turnoverClass=#{rec_tur.classId.name},
+	    turnoverPhase=#{turnoverPhase},
+	    state=#{state},
+	    studentName=#{studentName},
+	    turnoverDate=#{turnoverDate},
+	    whetherReund=#{whetherReund},
+	    enteringPersonnel=#{enteringPersonnel},
+	    schoolDate=#{schoolDate},
+	    qq=#{qq}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from turnoverStudent where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select * from turnoverStudent
+  </select>
+    <sql id="conditionSql">
+        <where>
+            <if test="keyword!=null">
+                (studentName like concat('%',#{keyword},'%')or qq like concat('%',#{keyword},'%'))
+            </if>
+        </where>
+    </sql>
+    <select id="queryPageCount" resultType="long">
+        select count(0) from turnoverStudent
+        <include refid="conditionSql"/>
+    </select>
+    <select id="queryPageData" resultMap="BaseResultMap">
+        select * from turnoverStudent
+        <include refid="conditionSql"/>
+        limit #{start},#{rows}
+    </select>
+</mapper>

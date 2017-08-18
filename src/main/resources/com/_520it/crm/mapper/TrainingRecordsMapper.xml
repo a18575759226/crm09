@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.crm.mapper.TrainingRecordsMapper">
+	<resultMap id="BaseResultMap" type="com._520it.crm.domain.TrainingRecords">
+		<id column="id" property="id"/>
+		<result column="address" property="address"/>
+		<result column="trainingTime" property="trainingTime"/>
+		<result column="trainingContent" property="trainingContent"/>
+		<result column="remark" property="remark"/>
+		<result column="trainingResult" property="trainingResult"/>
+		<association property="bigCustomer" javaType="BigCustomer" select="com._520it.crm.mapper.BigCustomerMapper.selectByPrimaryKey" column="bigCustomer_id"/>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="long">
+    	delete from trainingRecords where id = #{id}
+  	</delete>
+	<insert id="insert" parameterType="com._520it.crm.domain.TrainingRecords" useGeneratedKeys="true" keyProperty="id">
+    insert into trainingRecords 
+    (address,trainingTime,trainingContent,remark,trainingResult,bigCustomer_id)
+    values 
+    (#{address},#{trainingTime},#{trainingContent},#{remark},#{trainingResult},#{bigCustomer.id})
+  	</insert>
+	<update id="updateByPrimaryKey" parameterType="com._520it.crm.domain.TrainingRecords">
+    update trainingRecords
+    set
+	    address=#{address},
+	    trainingTime=#{trainingTime},
+	    trainingContent=#{trainingContent},
+	    remark=#{remark},
+	    trainingResult=#{trainingResult}
+    where id = #{id}
+  	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="long">
+    select * from trainingRecords where id = #{id}
+  	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    select * from trainingRecords
+  	</select>
+	<sql id="conditionSql">
+		<where>
+		</where>
+	</sql>
+	<select id="queryPageCount" resultType="long">
+		select count(0) from trainingRecords
+		<include refid="conditionSql"/>
+	</select>
+	<select id="queryPageData" resultMap="BaseResultMap">
+		select * from trainingRecords
+		<include refid="conditionSql"/>
+		limit #{start},#{rows}
+	</select>
+	<select id="listRecordsByBigCustomerId" resultType="com._520it.crm.domain.TrainingRecords">
+		SELECT * FROM trainingrecords WHERE bigCustomer_id = #{id}
+	</select>
+</mapper>
